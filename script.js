@@ -1,3 +1,8 @@
+let cart = [];
+
+let  modalQt = 1;//Manter a quantidade do modal em 1
+let modalKey = 1;
+
 const c = (el)=> document.querySelector(el);
 const cs = (el)=>document.querySelectorAll(el);
 
@@ -18,15 +23,14 @@ pizzaJson.map((item,index)=>{//Mapear o Json com as informações da pizza
     pizzaItem.querySelector('.pizza-item--desc').innerHTML = item.description;
     pizzaItem.querySelector('a').addEventListener('click', (e)=>{
         e.preventDefault();//Ao clicar na pizza não atualizar a tela
-
-
         let key = e.target.closest('.pizza-item').getAttribute('data-key');//Atribuir o data-key a cada pizza
-        modalQt = 1;//Manter a quantidade do modal em 1
+       modalQt = 1;
+       modalKey = key;
 
         /****************************************Adicionar informações da pizza no modal****************************************/
 
          c('.pizzaBig img').src = pizzaJson[key].img //Mostrar imagem no modal
-;        c('.pizzaInfo h1').innerHTML = pizzaJson[key].name;//Mostrar o nome da pizza no modal
+         c('.pizzaInfo h1').innerHTML = pizzaJson[key].name;//Mostrar o nome da pizza no modal
          c('.pizzaInfo--desc').innerHTML = pizzaJson[key].description;//Mostrar a descrição da pizza
          c('.pizzaInfo--actualPrice').innerHTML = `R$ ${pizzaJson[key].price.toFixed(2)}`;//Mostrar preço no modal
         
@@ -79,10 +83,35 @@ c('.pizzaInfo--qtmais').addEventListener('click', ()=>{//Aumentar a quantidade d
 });
 
 //Ações para escolher o tamanho da pizza no modal
-cs('.pizzaInfo--size').forEach ((size, Index)=>{
+cs('.pizzaInfo--size').forEach ((size, Index)=>{//
     size.addEventListener('click',(e)=>{
+        //remove o que foi selecionado e muda para outr tamanho selecuinado
         c('.pizzaInfo--size.selected').classList.remove('selected');
         size.classList.add('selected');
     });
 });
+
+
+c('.pizzaInfo--addButton').addEventListener('click', ()=>{
+    let size =  parseInt(c('.pizzaInfo--size.selected').getAttribute('data-key'));
+
+    let identifier = pizzaJson[modalKey].id+'@'+size;//identificador
+
+    let key = cart.findIndex((item)=> item.identifier == identifier);
+    
+    if(key > -1) {
+        cart[key].qt += modalQt;
+    }else{
+        cart.push({
+            id:pizzaJson[modalKey].id,
+            size,
+            qt:modalQt
+            
+        });
+        ;
+   };
+
+    closeModal();
+});
+
 
